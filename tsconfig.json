@@ -1,0 +1,29 @@
+{
+    "extends": "@tsconfig/node22/tsconfig.json",
+    "compilerOptions": {
+        "strict": true,
+        "outDir": "./dist",
+        "rootDir": "./src",
+        "target": "ESNext",
+        "module": "NodeNext",
+        "moduleResolution": "NodeNext",
+        "esModuleInterop": true,
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
+        "allowSyntheticDefaultImports": true,
+        "baseUrl": "./src",
+        "paths": {
+            "pino": ["./node_modules/pino"],
+            "#sdk/*": ["sdk/*"],
+            "#bot/*": ["bot/*"],
+            "#root/*": ["./*"]
+        },
+        "typeRoots": ["./src/types", "./node_modules/@types"]
+    },
+    "exclude": ["node_modules/", "dist"],
+    "include": ["src/**/*"],
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "skipLibCheck": true
+}

@@ -1,0 +1,51 @@
+{
+  "name": "notion-api-bot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch --include './src/*' src/index.ts --resolveJsonModule | npx pino-pretty",
+    "build": "tsc && tsc-alias",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "lint:check": "eslint",
+    "lint:fix": "eslint --fix",
+    "prettier:fix": "npx prettier . --write",
+    "start": "node ./dist/bot.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@eslint/js": "^9.10.0",
+    "@tsconfig/node22": "^22.0.0",
+    "@types/node": "^22.5.4",
+    "@types/node-jose": "^1.1.13",
+    "@types/pino": "^7.0.4",
+    "@types/validator": "^13.12.1",
+    "eslint": "^9.10.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-jest": "^28.8.3",
+    "eslint-plugin-prettier": "^5.2.1",
+    "globals": "^15.9.0",
+    "nodemon": "^3.1.4",
+    "prettier": "3.3.3",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.19.2",
+    "typescript": "^5.5.4",
+    "typescript-eslint": "^8.4.0"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.782.0",
+    "@grammyjs/chat-members": "^1.1.0",
+    "@grammyjs/conversations": "github:grammyjs/conversations",
+    "@grammyjs/files": "^1.1.1",
+    "@notionhq/client": "^2.3.0",
+    "@yandex-cloud/nodejs-sdk": "^2.8.0",
+    "dotenv": "^16.4.5",
+    "grammy": "^1.30.0",
+    "pino": "^9.5.0",
+    "tsc-alias": "^1.8.10"
+  }
+}
