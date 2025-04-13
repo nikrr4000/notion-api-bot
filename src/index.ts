@@ -1,15 +1,11 @@
-import botPromise from "#bot/index.js"
+import initializeBot from "#bot/index.js"
+import { initializeEmitters } from "#actionControllers/index.js"
 
 console.log('restarted')
 
 const main = async () => {
-    const bot = await botPromise
-
-    bot.hears('enter', async (ctx) => {
-        await ctx.conversation.enter(ctx.session.conversationNames.handleVoice)
-    })
-
-    bot.start()
+    await initializeBot()
+    await initializeEmitters()
 }
 
 main()

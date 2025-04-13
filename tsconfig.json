@@ -16,6 +16,7 @@
             "pino": ["./node_modules/pino"],
             "#sdk/*": ["sdk/*"],
             "#bot/*": ["bot/*"],
+            "#actionControllers/*": ["actionControllers/*"],
             "#root/*": ["./*"]
         },
         "typeRoots": ["./src/types", "./node_modules/@types"]

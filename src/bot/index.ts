@@ -6,8 +6,12 @@ const { BOT_TOKEN } = sanitizedConfig
 const bot = new Bot<MyContext>(BOT_TOKEN)
 
 const initializeBot = async () => {
-    await setUpBot(bot);
-    return bot;
+    await setUpBot(bot)
+    bot.hears('enter', async (ctx) => {
+        await ctx.conversation.enter(ctx.session.conversationNames.handleVoice)
+    })
+
+    bot.start()
 };
 
-export default initializeBot();
+export default initializeBot;

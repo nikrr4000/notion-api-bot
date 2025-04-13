@@ -43,6 +43,7 @@
     "@grammyjs/files": "^1.1.1",
     "@notionhq/client": "^2.3.0",
     "@yandex-cloud/nodejs-sdk": "^2.8.0",
+    "axios": "^1.8.4",
     "dotenv": "^16.4.5",
     "grammy": "^1.30.0",
     "pino": "^9.5.0",

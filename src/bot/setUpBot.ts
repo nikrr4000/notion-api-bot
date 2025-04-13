@@ -3,6 +3,9 @@ import path from "node:path";
 import { conversations, createConversation } from "@grammyjs/conversations";
 import { session } from "grammy";
 import initialSessionObj from "./initialSessionObj.js";
+import extendCtx from "./middlewares/extendCtx.js";
+
+// FIXME: Bot type is broken
 
 const importedConversationObjs = async () => {
     const conversationsPath = path.join(import.meta.dirname, 'conversations');
@@ -19,7 +22,6 @@ const importedConversationObjs = async () => {
         {
             const { name } = importData.default
             const conversation = importData.default[name]
-
             acc.conversationNames = { ...acc.conversationNames, [name]: name }
             acc.conversationFunctions.push(conversation)
         } catch (error)
@@ -38,7 +40,7 @@ const setUpMiddlewares = (bot: MyBotT) => {
         }
         return prev(method, payload)
     })
-
+    bot.use(extendCtx)
     bot.use(conversations());
 }
 const initializeSession = (bot: MyBotT, conversationNames: ConversationNamesObj) => {
@@ -50,10 +52,10 @@ const initializeSession = (bot: MyBotT, conversationNames: ConversationNamesObj)
         }),
     );
 }
-const initializeConversations = async (bot: MyBotT, conversations: ConversationContainerFunction[]) => {
-    for (const conv of conversations)
+const initializeConversations = async (bot: MyBotT, containers: ConversationContainerFunction[]) => {
+    for (const container of containers)
     {
-        const convFunc = conv()
+        const convFunc = container()
         bot.use(createConversation(convFunc))
     }
 }
@@ -62,9 +64,6 @@ const initializeConversations = async (bot: MyBotT, conversations: ConversationC
 export default async (bot: MyBotT) => {
     const conversationsData = await importedConversationObjs()
     const { conversationNames, conversationFunctions } = conversationsData
-
-    console.log(conversationFunctions);
-
 
     initializeSession(bot, conversationNames)
     setUpMiddlewares(bot)

@@ -1,0 +1,26 @@
+{
+    "Name": {
+        "type": "title",
+        "data": "Шоссе в никуда 2"
+    },
+    "IMBd": {
+        "type": "number",
+        "data": 50
+    },
+    "Kinopisk": {
+        "type": "number",
+        "data": 50
+    },
+    "Rating-personal": {
+        "type": "number",
+        "data": 50
+    },
+    "Watched": {
+        "type": "checkbox",
+        "data": true
+    },
+    "Synopsis": {
+        "type": "rich_text",
+        "data": "Amazing but confusing"
+    }
+}

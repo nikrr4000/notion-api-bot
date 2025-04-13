@@ -2,7 +2,7 @@ import {
     serviceClients, cloudApi,
     type Session
 } from '@yandex-cloud/nodejs-sdk';
-import ycAgent from "./client.js";
+import ycAgent from "../client.js";
 
 const {
     operation: {
@@ -16,7 +16,7 @@ const {
     }
 } = cloudApi;
 
-class sttAgent {
+class SttAgent {
     private session: Session;
     private folderId: string;
 
@@ -111,4 +111,4 @@ class sttAgent {
     }
 }
 
-export default new sttAgent()
+export default new SttAgent()
