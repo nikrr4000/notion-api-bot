@@ -10,7 +10,6 @@ import {
     ListObjectsV2Command,
 } from "@aws-sdk/client-s3";
 import sanitizedConfig from "#root/config.js";
-import path from "node:path";
 import config from "#sdk/config.js";
 
 const { AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY } = sanitizedConfig

@@ -1,28 +1,32 @@
-import { emitterEmit } from "#root/EventController.js";
 import downloadToUploadStream from "#root/utils/downloadToUploadStream.js";
 import storage from "#sdk/aws/client.js"
 import config from "#sdk/config.js";
-import path from "node:path";
+import type EventController from "#root/events/EventEmitterFactory.js";
+import { createEventRequestResultHandlers, globalEmitterEmit } from "#root/events/index.js";
 
 // TODO: Make class structure more independent from bot api. Or not?
 export class VoiceToNotionAgent {
-    private chatId: number;
-    private userId: number;
-    private downloadUrl: string
+    private resultWaiterData: WaitersType;
+    private downloadUrl: string;
 
-    constructor({ chatId, userId, downloadUrl }: ReceivedAudioRequestCtx) {
-        this.chatId = chatId
-        this.userId = userId
-        this.downloadUrl = downloadUrl
+    constructor(ctx: ReceivedAudioRequestCtx) {
+        this.resultWaiterData = ctx.resultWaiterData;
+        this.downloadUrl = ctx.downloadUrl;
 
-        this.main()
+        this.main(ctx);
     }
 
-    private async main() {
-        const downloadUrl = await this.uploadDataProcessing()
-        if (!downloadUrl) return
+    private async main(ctx: ReceivedAudioRequestCtx) {
+        console.log('voice to notion init');
+        const bucketUrl = await this.uploadDataProcessing()
+        if (!bucketUrl) return
 
-
+        const [success, error] = ["stt:recognize:result", "stt:recognize:error"] as events.EventMessages[];
+        const sttResultPromise = createEventRequestResultHandlers(ctx.event, success, error)
+        this.recognizeVoiceMessage(bucketUrl, ctx.event)
+        console.log('waiting for stt result');
+        const sttResult = await sttResultPromise
+        console.log('got stt result: ', sttResult);
     }
 
     private createDownloadStream() {
@@ -31,13 +35,17 @@ export class VoiceToNotionAgent {
     private async uploadDataProcessing() {
         const streamObj = await this.createDownloadStream()
         if (!streamObj) return null;
-
         // TODO: Handle uploading output
         const res = await storage.uploadObject(streamObj)
         const { storageEndpoint, voiceBucket } = config.yc
-        return path.join(storageEndpoint, voiceBucket, streamObj.name)
+
+        return `${storageEndpoint}/${voiceBucket}/${streamObj.name}`
     }
-    // private processVoiceRecognize (url:string, objName: string){
-    //     emitterEmit("stt:recognize")
-    // }
+
+    private recognizeVoiceMessage(bucketUrl: string, eventController: EventController) {
+        globalEmitterEmit<stt.recognizeRequestObj>("stt:recognize", {
+            bucketUrl,
+            eventController
+        })
+    }
 }

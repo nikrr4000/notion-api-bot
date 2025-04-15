@@ -5,7 +5,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "dev": "tsx watch --include './src/*' src/index.ts --resolveJsonModule | npx pino-pretty",
+    "dev": "tsx watch --include './src/*/**' src/index.ts --resolveJsonModule | npx pino-pretty",
     "build": "tsc && tsc-alias",
     "test": "jest",
     "test:watch": "jest --watch",

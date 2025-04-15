@@ -1,5 +1,6 @@
 import { emitVoiceRecognizeRequest } from "#bot/controllers.js"
 import { handleFileUrl } from "#bot/convUtils/index.js"
+import { createEventRequestResultHandlers } from "#root/events/utils.js"
 
 export default {
     name: "handleVoice",
@@ -17,7 +18,7 @@ export default {
                 const { chatId, userId } = ctx
                 if (!chatId) return
 
-                emitVoiceRecognizeRequest({ chatId, userId, downloadUrl })
+                const recognizeRes = await emitVoiceRecognizeRequest({ downloadUrl })
             } catch (error)
             {
                 console.error(error);

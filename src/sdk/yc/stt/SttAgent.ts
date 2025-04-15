@@ -3,6 +3,9 @@ import {
     type Session
 } from '@yandex-cloud/nodejs-sdk';
 import ycAgent from "../client.js";
+import { globalEmitterOn } from '#root/events/index.js';
+import type EventController from '#root/events/EventEmitterFactory.js';
+import type { Operation } from '@yandex-cloud/nodejs-sdk/dist/generated/yandex/cloud/operation/operation.js';
 
 const {
     operation: {
@@ -23,6 +26,8 @@ class SttAgent {
     constructor() {
         this.session = this.initializeSession()
         this.folderId = this.initializeFolderId()
+
+        this.initializeListeners()
     }
 
     private initializeSession() {
@@ -30,6 +35,25 @@ class SttAgent {
     }
     private initializeFolderId() {
         return ycAgent.getFolderId()
+    }
+    // FIXME: Create automatic initialization
+    public initializeListeners() {
+        globalEmitterOn("stt:recognize", (data: stt.recognizeRequestObj) => this.main(data))
+    }
+
+    private async main(req: stt.recognizeRequestObj) {
+        const { bucketUrl, eventController } = req
+        const requestOpId = await this.createRecognizeRequest(bucketUrl)
+        this.intervalOpResponseRequesting(requestOpId.id, eventController)
+    }
+
+    private requestResultHandler(eventController: EventController, resObj: ResultObj<string | null>) {
+        if (resObj.error || (!resObj.result && !resObj.info))
+        {
+            eventController.emitterEmit("stt:recognize:error", resObj)
+        }
+        eventController.emitterEmit("stt:recognize:result", resObj)
+
     }
 
     private createRecognizeRequest(uri: string) {
@@ -48,7 +72,9 @@ class SttAgent {
         return speechkitClient.longRunningRecognize(recognizeRequest)
     }
 
-    private intervalOpResponseRequesting(opId: string) {
+    // TODO: Maybe it's better to separate eventController obj from intervalOpResponseRequesting
+    private intervalOpResponseRequesting(opId: string, eventController: EventController) {
+        const resObj = { result: null, error: null } as ResultObj<string | null>
         let isRequesting = false;
         // TODO: add limiter
         // let requestLimit = 5
@@ -58,28 +84,36 @@ class SttAgent {
             try
             {
                 isRequesting = true;
-                const isDone = await this.processIntervalRequesting(opId);
-                if (isDone)
+                const opResponse = await this.processIntervalRequesting(opId);
+                if (opResponse.done)
                 {
                     clearInterval(interval);
+                    const resData = this.decodeResponse(opResponse)
+                    const resStr = this.extractTextFromSttResponse(resData)
+
+                    resObj.result = resStr
                 }
             } catch (e)
             {
                 const err = e as Error
                 console.error('Error during operation status check:', err);
-                throw new Error(`Error during operation status check: ${err.message}`)
+                resObj.error = `Error during operation status check: ${err.message}`
             } finally
             {
+                if (resObj.error || resObj.result)
+                {
+                    this.requestResultHandler(eventController, resObj)
+                }
                 isRequesting = false;
             }
-        }, 5000);
+        }, 1000);
 
         return interval;
     }
 
-    private async processIntervalRequesting(opId: string): Promise<boolean> {
-        const response = await this.getOpResponse(opId);
-        return response.done;
+    private async processIntervalRequesting(opId: string): Promise<Operation> {
+        return this.getOpResponse(opId);
+
     }
 
     private async getOpResponse(opId: string) {
