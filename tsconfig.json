@@ -14,12 +14,13 @@
         "baseUrl": "./src",
         "paths": {
             "pino": ["./node_modules/pino"],
-            "#sdk/*": ["sdk/*"],
-            "#bot/*": ["bot/*"],
-            "#actionControllers/*": ["actionControllers/*"],
+            "#application/*": ["application/*"],
+            "#domain/*": ["domain/*"],
+            "#infrastructure/*": ["infrastructure/*"],
+            "#presentation/*": ["presentation/*"],
             "#root/*": ["./*"]
         },
-        "typeRoots": ["./src/types", "./node_modules/@types"]
+        "typeRoots": ["src/old/types", "./node_modules/@types"]
     },
     "exclude": ["node_modules/", "dist"],
     "include": ["src/**/*"],
