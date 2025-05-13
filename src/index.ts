@@ -1,14 +1,3 @@
-import { initializeStrategies } from "#actionControllers/index.js"
-import initializeBot from "#bot/index.js"
-import SttAgent from "#sdk/yc/stt/SttAgent.js";
+import { bootstrap } from "#infrastructure/bootstrap/index.js";
 
-console.log('restarted')
-
-const main = async () => {
-    initializeStrategies()
-    SttAgent.initializeListeners()
-    await initializeBot()
-
-}
-
-main()
+bootstrap();
